@@ -11,7 +11,7 @@
       <el-col :span="24"><el-input prefix-icon="el-icon-user" v-model= "userInput" placeholder="请输入内容"></el-input></el-col>
       <el-col :span="24"><el-input prefix-icon="el-icon-lock" v-model= "userInput" placeholder="请输入密码"></el-input></el-col>
        <el-col :span="12"><el-input prefix-icon="el-icon-key" v-model= "userInput" placeholder="请输入验证码"></el-input></el-col>
-       <el-col :span="24"><el-checkbox v-model="checked"></el-checkbox>我已阅读并同意用户协议和隐私条款</el-col>
+       <el-col :span="24"><el-checkbox v-model="checked"></el-checkbox>我已阅读并同意<el-link type="primary">用户协议</el-link>和<el-link type="primary">隐私条款</el-link></el-col>
        <el-col :span="24"><el-button type="primary" class="btn">登录</el-button></el-col>
        <el-col :span="24"><el-button type="primary" class="btn">注册</el-button></el-col>
       </div> 
