@@ -52,17 +52,23 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitForm('loginForm')">登录</el-button>
-          <el-button type="primary">注册</el-button
+          <el-button type="primary" @click="showDialog">注册</el-button
           >
         </el-form-item>
       </el-form>
     </div>
     <img src="./images/login_banner_ele.png" alt="" />
+    <registerDialog ref="registerDialog"></registerDialog>
   </div>
 </template>
 
 <script>
+import registerDialog from './components/registerDialog'
 export default {
+   name:"login",
+   components:{
+      registerDialog
+   },
   data() {
     return {
       loginForm: {
@@ -93,6 +99,9 @@ export default {
           return false;
         }
       });
+    },
+    showDialog(){
+       this.$refs.registerDialog.dialogFormVisible = true
     }
   }
 };
