@@ -7,7 +7,8 @@ import login from '../views/login/login.vue'
 const router = new VueRouter({
   // 规则
   routes: [
-   {path:'/login',component:login}
+   {path:'/login',component:login},
+   {path:"",redirect:'/login'},
   ]
 })
 export default router

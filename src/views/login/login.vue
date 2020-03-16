@@ -1,80 +1,156 @@
 <template>
-<div class="login-con">
-   <div class="login-left">
+  <div class="login-con">
+    <div class="login-left">
       <div class="titleBox">
-         <img src="./images/login.png" alt="" class="login">
-         <span class="title">黑马面面</span>
-         <span class="line"></span>
-         <span class="subTitle">用户登录</span>
+        <img src="./images/login.png" alt="" class="login" />
+        <span class="title">黑马面面</span>
+        <span class="line"></span>
+        <span class="subTitle">用户登录</span>
       </div>
-      <div class="inpBox">
-      <el-col :span="24"><el-input prefix-icon="el-icon-user" v-model= "userInput" placeholder="请输入内容"></el-input></el-col>
-      <el-col :span="24"><el-input prefix-icon="el-icon-lock" v-model= "userInput" placeholder="请输入密码"></el-input></el-col>
-       <el-col :span="12"><el-input prefix-icon="el-icon-key" v-model= "userInput" placeholder="请输入验证码"></el-input></el-col>
-       <el-col :span="24"><el-checkbox v-model="checked"></el-checkbox>我已阅读并同意<el-link type="primary">用户协议</el-link>和<el-link type="primary">隐私条款</el-link></el-col>
-       <el-col :span="24"><el-button type="primary" class="btn">登录</el-button></el-col>
-       <el-col :span="24"><el-button type="primary" class="btn">注册</el-button></el-col>
-      </div> 
-   </div>
-   <img src="./images/login_banner_ele.png" alt="">
-</div>
+      <el-form
+        ref="loginForm"
+        :rules="rules"
+        :model="loginForm"
+        label-width="43px"
+      >
+        <el-form-item>
+          <el-input
+            prefix-icon="el-icon-user"
+            v-model="loginForm.phone"
+            placeholder="请输入内容"
+          ></el-input>
+        </el-form-item>
+        <el-form-item prop="password">
+          <el-input
+            prefix-icon="el-icon-lock"
+            v-model="loginForm.password"
+            placeholder="请输入密码"
+          ></el-input>
+        </el-form-item>
+        <el-form-item prop="loginCode">
+          <el-row>
+            <el-col :span="17"
+              ><el-input
+                <el-input
+                prefix-icon="el-icon-key"
+                v-model="loginForm.loginCode"
+                placeholder="请输入验证码"
+              ></el-input
+            ></el-col>
+            <el-col :span="7"
+              ><img class="loginCode" src="./images/login_captcha.png" alt=""
+            /></el-col>
+          </el-row>
+        </el-form-item>
+        <el-form-item>
+          <el-checkbox v-model="loginForm.isChecked"
+            >我已阅读并同意<el-link type="primary">用户协议</el-link>和<el-link
+              type="primary"
+              >隐私条款</el-link
+            ></el-checkbox
+          >
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="submitForm('loginForm')">登录</el-button>
+          <el-button type="primary">注册</el-button
+          >
+        </el-form-item>
+      </el-form>
+    </div>
+    <img src="./images/login_banner_ele.png" alt="" />
+  </div>
 </template>
 
 <script>
 export default {
- data(){
-   return{
-      userInput:'',
-      checked:false
+  data() {
+    return {
+      loginForm: {
+        phone: "",
+        password: "",
+        loginCode: "",
+        isChecked: false
+      },
+      rules: {
+        password: [
+          { required: true, message: "密码不能为空", trigger: "blur" },
+          { min: 6, max: 12, message: "密码的长度在6-12位", trigger: "blur" }
+        ],
+        loginCode: [
+          { required: true, message: "请输入验证码", trigger: "blur" },
+          { min: 4, max: 4, message: "验证码的长度是4个", trigger: "blur" }
+        ]
       }
-   }
-}
+    };
+  },
+  methods: {
+    submitForm(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          this.$message.success("登录成功");
+        } else {
+          this.$message.error("登录失败");
+          return false;
+        }
+      });
+    }
+  }
+};
 </script>
 
 <style lang="less">
-   .login-con{
-     height: 100%;
-     background:linear-gradient(225deg,rgba(20,147,250,1),rgba(1,198,250,1));
-     display: flex;
-     align-items: center;
-     justify-content: space-around;
-    .login-left{
-      width:478px;
-      height:550px;
-      background:rgba(245,245,245,1);
-      .titleBox{
-         margin: 48px 48px;
-         display: flex;
-         align-items: center;
-         .title{
-            margin-left: 16px;
-            margin-right: 14px;
-            font-size: 24px;
-         }
-         .line{
-            width: 1px;
-            height: 28px;
-            background-color: #C7C7C7;
-         }
-         .subTitle{
-            font-size: 21px;
-            margin-left: 12px;
-         }
+.login-con {
+  height: 100%;
+  background: linear-gradient(
+    225deg,
+    rgba(20, 147, 250, 1),
+    rgba(1, 198, 250, 1)
+  );
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  .login-left {
+    width: 478px;
+    height: 550px;
+    background: rgba(245, 245, 245, 1);
+    padding-right: 41px;
+    box-sizing: border-box;
+    .titleBox {
+      margin: 48px 48px;
+      display: flex;
+      align-items: center;
+      .title {
+        margin-left: 16px;
+        margin-right: 14px;
+        font-size: 24px;
       }
-      .inpBox{
-         padding: 0 43px;
-         .el-input__inner{
-            margin-bottom: 25px;
-         }
-         .btn{
-            width: 394px;
-            height: 40px;
-            border-radius: 4px;
-            margin-top:26px; 
-            font-size: 16px;
-            color: #FFFFFF;
-         }
+      .line {
+        width: 1px;
+        height: 28px;
+        background-color: #c7c7c7;
+      }
+      .subTitle {
+        font-size: 21px;
+        margin-left: 12px;
       }
     }
-   }
+    .el-button {
+      width: 394px;
+      height: 40px;
+      margin-bottom: 26px;
+      margin-left: 0;
+    }
+    .loginCode {
+      width: 110px;
+      height: 40px;
+    }
+    .el-chenckbox {
+      display: flex;
+      align-items: center;
+      .el-checkbox__label {
+        display: flex;
+      }
+    }
+  }
+}
 </style>
