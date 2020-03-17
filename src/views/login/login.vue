@@ -13,7 +13,7 @@
         :model="loginForm"
         label-width="43px"
       >
-        <el-form-item>
+        <el-form-item prop="phone">
           <el-input
             prefix-icon="el-icon-user"
             v-model="loginForm.phone"
@@ -24,6 +24,7 @@
           <el-input
             prefix-icon="el-icon-lock"
             v-model="loginForm.password"
+            show-password
             placeholder="请输入密码"
           ></el-input>
         </el-form-item>
@@ -38,7 +39,7 @@
               ></el-input
             ></el-col>
             <el-col :span="7"
-              ><img class="loginCode" src="./images/login_captcha.png" alt=""
+              ><img @click="getCode" class="loginCode" :src="codeURL" alt=""
             /></el-col>
           </el-row>
         </el-form-item>
@@ -51,9 +52,10 @@
           >
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm('loginForm')">登录</el-button>
-          <el-button type="primary" @click="showDialog">注册</el-button
+          <el-button type="primary" @click="submitForm('loginForm')"
+            >登录</el-button
           >
+          <el-button type="primary" @click="showDialog">注册</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -63,12 +65,15 @@
 </template>
 
 <script>
-import registerDialog from './components/registerDialog'
+import registerDialog from "./components/registerDialog";
+import { checkPhone } from "@/uitils/validator";
+import { setToken } from "@/uitils/token";
+import { login } from "@/api/login"
 export default {
-   name:"login",
-   components:{
-      registerDialog
-   },
+  name: "login",
+  components: {
+    registerDialog
+  },
   data() {
     return {
       loginForm: {
@@ -77,10 +82,15 @@ export default {
         loginCode: "",
         isChecked: false
       },
+      codeURL: process.env.VUE_APP_URL + "/captcha?type=login",
       rules: {
+        phone: [
+          { required: true, message: "手机号码不能为空", trigger: "blur" },
+          { validator: checkPhone, trigger: "change" }
+        ],
         password: [
           { required: true, message: "密码不能为空", trigger: "blur" },
-          { min: 6, max: 12, message: "密码的长度在6-12位", trigger: "blur" }
+          { min: 6, max: 12, message: "密码的长度在6-12位", trigger: "change" }
         ],
         loginCode: [
           { required: true, message: "请输入验证码", trigger: "blur" },
@@ -93,15 +103,35 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          this.$message.success("登录成功");
+          if (this.loginForm.isChecked != true) {
+            return this.$message.warning("请同意隐私协议");
+          }
+          login({
+            phone:this.loginForm.phone,
+            password:this.loginForm.password,
+            code:this.loginForm.loginCode
+          }).then(res =>{
+            //  window.console.log(res)
+            if(res.data.code === 200){
+              setToken(res.data.data.token)
+              this.$message.success('登录成功')
+              this.$router.push("/index")
+            }else if(res.data.code === 202){
+              this.$message.error(res.data.message)
+            }
+          })
         } else {
           this.$message.error("登录失败");
           return false;
         }
       });
     },
-    showDialog(){
-       this.$refs.registerDialog.dialogFormVisible = true
+    showDialog() {
+      this.$refs.registerDialog.dialogFormVisible = true;
+    },
+    getCode() {
+      this.codeURL =
+        process.env.VUE_APP_URL + "/captcha?type=login&t=" + Date.now();
     }
   }
 };

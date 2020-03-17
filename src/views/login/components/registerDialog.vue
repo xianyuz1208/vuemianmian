@@ -80,22 +80,7 @@
 
 <script>
 import { sendSms,upRegister } from "../../../api/register";
-const checkPhone = (rule, value, callback) => {
-  let reg = /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/;
-  if (reg.test(value) == true) {
-    callback();
-  } else {
-    callback(new Error("请输入正确的手机格式"));
-  }
-};
-const checkMailbox = (rule, value, callback) => {
-  let reg = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/;
-  if (reg.test(value) == true) {
-    callback();
-  } else {
-    callback(new Error("请输入正确的邮箱格式"));
-  }
-};
+import { checkMailbox,checkPhone } from '@/uitils/validator'
 export default {
   name: "registerDialog",
   data() {
@@ -123,7 +108,7 @@ export default {
         ],
         password: [
           { required: true, message: "密码不能为空", trigger: "blur" },
-          { min: 6, max: 8, message: "密码的长度为6-12位", trigger: "change" }
+          { min: 6, max: 12, message: "密码的长度为6-12位", trigger: "change" }
         ],
         phone: [
           { required: true, message: "手机号码不能为空", trigger: "blur" },
