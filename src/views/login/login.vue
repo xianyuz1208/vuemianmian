@@ -133,7 +133,7 @@ export default {
       this.codeURL =
         process.env.VUE_APP_URL + "/captcha?type=login&t=" + Date.now();
     }
-  }
+  },
 };
 </script>
 
