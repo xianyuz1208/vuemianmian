@@ -1,17 +1,17 @@
 <template>
   <div class="subject-content">
     <el-card class="top-card">
-      <el-form :inline="true" :model="formInline" class="demo-form-inline">
-        <el-form-item label="学科编号">
+      <el-form ref="formInline" :inline="true" :model="formInline" class="demo-form-inline">
+        <el-form-item label="学科编号" prop="rid">
           <el-input class="short" v-model="formInline.rid"></el-input>
         </el-form-item>
-        <el-form-item label="学科名称">
+        <el-form-item label="学科名称" prop="name">
           <el-input class="normal" v-model="formInline.name"></el-input>
         </el-form-item>
-        <el-form-item label="创建者">
+        <el-form-item label="创建者" prop="username">
           <el-input class="short" v-model="formInline.username"></el-input>
         </el-form-item>
-        <el-form-item label="状态">
+        <el-form-item label="状态" prop="status">
           <el-select
             class="normal"
             v-model="formInline.status"
@@ -23,7 +23,7 @@
         </el-form-item>
         <el-form-item>
           <el-button  @click="searchData" type="primary">查询</el-button>
-          <el-button>清除</el-button>
+          <el-button @click="clearData">清除</el-button>
           <el-button @click="showDialog" icon="el-icon-plus" type="primary">新增学科</el-button>
         </el-form-item>
       </el-form>
@@ -52,9 +52,9 @@
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-          <el-button size="mini" type="text">编辑</el-button>
+          <el-button size="mini" type="text" @click="editData(scope.row)">编辑</el-button>
           <el-button size="mini" @click="modification(scope.$index,scope.row)" type="text">{{ scope.row.status===1 ? "禁用" : "启用" }}</el-button>
-          <el-button size="mini" type="text">删除</el-button>
+          <el-button size="mini" type="text" @click="delData(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -71,18 +71,22 @@
       </el-pagination>
     </el-card>
     <subjectAdd ref="subjectAdd"></subjectAdd>
+    <subjectEdit ref="subjectEdit"></subjectEdit>
   </div>
 </template>
 
 <script>
- import {subList,subStatus} from '@/api/subject.js'
+ import {subList,subStatus,subRemove} from '@/api/subject.js'
  import subjectAdd from "./components/subjectAdd"
+ import subjectEdit from "./components/subjectEdit"
 export default {
   name: "subject",
   components:{
-    subjectAdd
+    subjectAdd,
+    subjectEdit
   },
   created(){
+    //获取列表数据
      this.getData()
   },
   data() {
@@ -109,24 +113,67 @@ export default {
     };
   },
   methods:{
+    //获取列表数据的请求
       getData(){
       subList({
         limit:this.limit,
         page:this.page,
         ...this.formInline
          }).then(res =>{
-       window.console.log(res)
+      //  window.console.log(res)
        this.tableData = res.data.items
        this.total = res.data.pagination.total
      })
       },
+      //搜索
       searchData(){
         this.page = 1;
         this.getData()
       },
+      //清除
+      clearData(){
+        //清空表单让页面回到第一页,再重新请求数据
+        this.$refs.formInline.resetFields()
+        this.page = 1;
+        this.getData()
+      },
+      //点击新增
       showDialog(){
         this.$refs.subjectAdd.dialogFormVisible = true;
       },
+      //点击编辑
+      editData(row){
+        this.$refs.subjectEdit.dialogFormVisible = true;
+        this.$refs.subjectEdit.form = JSON.parse(JSON.stringify(row))
+      },
+      //删除
+      delData(row){
+        // window.console.log(row)
+        subRemove({id:row.id}).then(res =>{
+           this.$confirm('此操作将永久删除, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          if(res.code === 200){
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          });
+          this.page = 1;
+          this.getData();
+          }else{
+            this.$message.error(res.message)
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
+        })
+      },
+      //修改禁用启用状态
       modification(index,row){
         subStatus({
           id:row.id
