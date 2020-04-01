@@ -43,7 +43,11 @@
         </el-table-column>
         <el-table-column prop="short_name" label="简称" width="140"></el-table-column>
         <el-table-column prop="username" label="创建者" width="130"></el-table-column>
-        <el-table-column prop="create_time" label="创建日期"></el-table-column>
+        <el-table-column prop="create_time" label="创建日期">
+          <template slot-scope="scope">
+            {{ scope.row.create_time | formTime }}
+          </template>
+        </el-table-column>
         <el-table-column prop="status" label="状态">
           <template slot-scope="scope">
              <span v-if="scope.row.status === 1">启用</span>
@@ -144,7 +148,11 @@ export default {
       //点击编辑
       editData(row){
         this.$refs.subjectEdit.dialogFormVisible = true;
-        this.$refs.subjectEdit.form = JSON.parse(JSON.stringify(row))
+        if(row.id != this.$refs.subjectEdit.form.id){
+          this.$refs.subjectEdit.form = JSON.parse(JSON.stringify(row))
+        }else{
+          
+        }
       },
       //删除
       delData(row){
@@ -160,7 +168,13 @@ export default {
             type: 'success',
             message: '删除成功!'
           });
-          this.page = 1;
+          // this.page = 1;
+          if(this.tableData.length == 1){
+            this.page--;
+            if(this.page<= 0){
+              this.page = 1;
+            }
+          }
           this.getData();
           }else{
             this.$message.error(res.message)

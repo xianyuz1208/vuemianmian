@@ -14,6 +14,8 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import store from './store/index'
 Vue.use(ElementUI)
+//导入时间过滤器
+import "@/filters/index.js"
 Vue.config.productionTip = false
 import './style/base.css'
 new Vue({
