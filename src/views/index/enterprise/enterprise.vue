@@ -1,17 +1,17 @@
 <template>
   <div class="enterprise-content">
     <el-card class="top-card">
-      <el-form :inline="true" :model="formInline" class="demo-form-inline">
-        <el-form-item label="企业编号">
+      <el-form :inline="true" ref="formInline" :model="formInline" class="demo-form-inline">
+        <el-form-item label="企业编号" prop="eid">
           <el-input class="short" v-model="formInline.eid"></el-input>
         </el-form-item>
-        <el-form-item label="企业名称">
+        <el-form-item label="企业名称" prop="name">
           <el-input class="normal" v-model="formInline.name"></el-input>
         </el-form-item>
-        <el-form-item label="创建者">
+        <el-form-item label="创建者" prop="username">
           <el-input class="short" v-model="formInline.username"></el-input>
         </el-form-item>
-        <el-form-item label="状态">
+        <el-form-item label="状态" prop="status">
           <el-select
             class="normal"
             v-model="formInline.status"
@@ -176,7 +176,8 @@ export default {
     },
     //清除
     clearData() {
-      this.$refs.formInline.resetFields();
+      this.formInline = {};
+      // this.$refs.formInline.resetFields();
       this.formInline.page = 1;
       this.getData();
     },

@@ -8,13 +8,10 @@ import { info } from "@/api/index.js";
 import { getToken, remToken } from "@/uitils/token.js";
 import login from "../views/login/login.vue";
 import index from "../views/index/index.vue";
-import chart from "@/views/index/chart/chart.vue";
-import user from "@/views/index/user/user.vue";
-import question from "@/views/index/question/question.vue";
-import enterprise from "@/views/index/enterprise/enterprise.vue";
-import subject from "@/views/index/subject/subject.vue";
 import store from "../store/index";
-const whiteRouter = ["/login"];
+import children from './childrenRoute.js'
+//白名单
+const whiteRouter = ["/login"]
 // 创建
 const router = new VueRouter({
   // 规则
@@ -23,7 +20,8 @@ const router = new VueRouter({
       path: "/login",
       component: login,
       meta: {
-        title: "登录"
+        title: "登录",
+        rules:['超级管理员','管理员','老师','学生']
       }
     },
     { path: "", redirect: "/login" },
@@ -31,19 +29,10 @@ const router = new VueRouter({
       path: "/index",
       component: index,
       meta: {
-        title: "首页"
+        title: "首页",
+        rules:['超级管理员','管理员','老师','学生']
       },
-      children: [
-        { path: "chart", component: chart, meta: { title: "数据概览" } },
-        { path: "user", component: user, meta: { title: "用户列表" } },
-        { path: "question", component: question, meta: { title: "题库列表" } },
-        {
-          path: "enterprise",
-          component: enterprise,
-          meta: { title: "企业列表" }
-        },
-        { path: "subject", component: subject, meta: { title: "学科列表" } }
-      ]
+      children
     }
   ]
 });
@@ -63,11 +52,28 @@ router.beforeEach((to, from, next) => {
           NProgress.done();
           next("/login");
         } else if (res.data.code === 200) {
-          const username = res.data.data.username;
-          const userIcon = process.env.VUE_APP_URL + "/" + res.data.data.avatar;
-          store.commit("changeName", username);
-          store.commit("changeIcon", userIcon);
-          next();
+          if (res.data.data.status === 1) {
+            const username = res.data.data.username;
+            const userIcon =
+              process.env.VUE_APP_URL + "/" + res.data.data.avatar;
+            store.commit("changeName", username);
+            store.commit("changeIcon", userIcon);
+            if (whiteRouter.includes(from.path)) {
+              Message.success("登录成功");
+            }
+            const role = res.data.data.role
+            store.commit('changeRole',role)
+            if(to.meta.rules.includes(role)){
+              next();
+            }else{
+              Message.error('没有访问的权限')
+              NProgress.done();
+            }
+          } else {
+            Message.warning("请等待管理员审核");
+            NProgress.done();
+            next("/login");
+          }
         }
       });
     }

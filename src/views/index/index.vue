@@ -15,11 +15,13 @@
     <el-container>
       <el-aside width="auto">
         <el-menu router :collapse="isCollapse" :default-active="$route.path" class="el-menu-vertical-demo">
-          <el-menu-item index="/index/chart">
-            <i class="el-icon-pie-chart"></i>
-            <span slot="title">数据概览</span>
+          <template v-for="(item,index) in navRoute">
+          <el-menu-item v-if="item.meta.rules.includes($store.state.role)" :index="item.meta.fullPath" :key="index">
+            <i :class="item.meta.icon"></i>
+            <span slot="title">{{item.meta.title}}</span>
           </el-menu-item>
-          <el-menu-item index="/index/user">
+          </template>
+          <!-- <el-menu-item index="/index/user">
             <i class="el-icon-user"></i>
             <span slot="title">用户列表</span>
           </el-menu-item>
@@ -34,7 +36,7 @@
           <el-menu-item index="/index/subject">
             <i class="el-icon-notebook-2"></i>
             <span slot="title">学科列表</span>
-          </el-menu-item>
+          </el-menu-item> -->
         </el-menu>
       </el-aside>
       <el-main>
@@ -47,13 +49,15 @@
 <script>
 import {  logout } from "@/api/index.js";
 import { remToken } from "@/uitils/token.js";
+import navRoute from "@/router/childrenRoute.js"
 export default {
   name: "index",
   data() {
     return {
       // avatar: "",
       // username: "",
-      isCollapse: false
+      isCollapse: false,
+      navRoute:navRoute
     };
   },
   // created() {

@@ -70,7 +70,10 @@
             <span style="color:red" v-else>禁用</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作">
+        <el-table-column
+          v-if="['老师', '管理员', '超级管理员'].includes($store.state.role)"
+          label="操作"
+        >
           <template slot-scope="scope">
             <el-button size="mini" type="text" @click="editData(scope.row)"
               >编辑</el-button
@@ -81,7 +84,11 @@
               type="text"
               >{{ scope.row.status === 1 ? "禁用" : "启用" }}</el-button
             >
-            <el-button size="mini" type="text" @click="delData(scope.row)"
+            <el-button
+              v-if="['管理员', '超级管理员'].includes($store.state.role)"
+              size="mini"
+              type="text"
+              @click="delData(scope.row)"
               >删除</el-button
             >
           </template>
@@ -163,6 +170,7 @@ export default {
     //清除
     clearData() {
       //清空表单让页面回到第一页,再重新请求数据
+      // this.formInline = {};
       this.$refs.formInline.resetFields();
       this.page = 1;
       this.getData();
@@ -253,6 +261,9 @@ export default {
     }
   }
   .bottom-card {
+    .el-table .cell {
+      text-align: center;
+    }
     margin-top: 19px;
     .my-page {
       margin-top: 30px;

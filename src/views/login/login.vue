@@ -114,7 +114,7 @@ export default {
             //  window.console.log(res)
             if(res.data.code === 200){
               setToken(res.data.data.token)
-              this.$message.success('登录成功')
+              // this.$message.success('登录成功')
               this.$router.push("/index")
             }else if(res.data.code === 202){
               this.$message.error(res.data.message)

@@ -4,7 +4,8 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
     state:{
         userIcon:"",
-        username:""
+        username:"",
+        role:""
     },
     mutations:{
         changeIcon(state,newIcon){
@@ -12,6 +13,9 @@ const store = new Vuex.Store({
         },
         changeName(state,newName){
             state.username = newName
+        },
+        changeRole(state,newRole){
+            state.role = newRole
         }
     }
 })
