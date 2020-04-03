@@ -16,6 +16,11 @@ import store from './store/index'
 Vue.use(ElementUI)
 //导入时间过滤器
 import "@/filters/index.js"
+//全局注册企业学科的下拉框
+import enterpriseDown from "./views/index/question/components/enterpriseDown.vue"
+import subjectDown from "./views/index/question/components/subjectDown.vue"
+Vue.component('enterpriseDown',enterpriseDown)
+Vue.component('subjectDown',subjectDown)
 Vue.config.productionTip = false
 import './style/base.css'
 new Vue({

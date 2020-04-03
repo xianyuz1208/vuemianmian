@@ -3,15 +3,7 @@
     <el-card class="top-card">
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
         <el-form-item label="学科">
-          <el-select v-model="formInline.subject" placeholder="请选择学科">
-            <el-option label="所有学科" value=""></el-option>
-            <el-option
-              v-for="(item, index) in subjectList"
-              :key="index"
-              :label="item.name"
-              value="item.id"
-            ></el-option>
-          </el-select>
+          <subjectDown v-model="formInline.subject" />
         </el-form-item>
         <el-form-item label="阶段">
           <el-select v-model="formInline.region" placeholder="请选择阶段">
@@ -20,15 +12,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="企业">
-          <el-select v-model="formInline.enterprise" placeholder="请选择企业">
-            <el-option label="所有企业" value=""></el-option>
-            <el-option
-              v-for="(item, index) in enterpriseList"
-              :key="index"
-              :label="item.name"
-              :value="item.id"
-            ></el-option>
-          </el-select>
+          <enterpriseDown v-model="formInline.enterprise" />
         </el-form-item>
         <el-form-item label="题型">
           <el-select v-model="formInline.region" placeholder="请选择题型">
@@ -67,7 +51,7 @@
         <el-form-item>
           <el-button type="primary">搜索</el-button>
           <el-button>清除</el-button>
-          <el-button type="primary" icon="el-icon-plus">新增试题</el-button>
+          <el-button type="primary" icon="el-icon-plus" @click="addQusetion">新增试题</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -82,21 +66,21 @@
         </el-table-column>
         <el-table-column label="学科.阶段">
           <template slot-scope="scope">
-            {{scope.row.subject_name}}
+            {{ scope.row.subject_name }}
             .
-            {{ {1:'初级',2:"中级",3:"高级"}[scope.row.step] }}
+            {{ { 1: "初级", 2: "中级", 3: "高级" }[scope.row.step] }}
           </template>
         </el-table-column>
         <el-table-column label="题型">
           <template slot-scope="scope">
-            {{ {1:'简单',2:"一般",3:"困难"}[scope.row.type] }}
+            {{ { 1: "简单", 2: "一般", 3: "困难" }[scope.row.type] }}
           </template>
         </el-table-column>
         <el-table-column prop="enterprise_name" label="企业"> </el-table-column>
         <el-table-column prop="username" label="创建者"> </el-table-column>
         <el-table-column prop="status" label="状态">
           <template slot-scope="scope">
-            {{scope.row.status === 1 ? "启用" : "禁用"}}
+            {{ scope.row.status === 1 ? "启用" : "禁用" }}
           </template>
         </el-table-column>
         <el-table-column prop="reads" label="访问量"> </el-table-column>
@@ -104,7 +88,7 @@
           <template slot-scope="scope">
             <el-button type="text">编辑</el-button>
             <el-button type="text">
-              {{scope.row.status===1 ? "禁用" : "启用"}}
+              {{ scope.row.status === 1 ? "禁用" : "启用" }}
             </el-button>
             <el-button type="text">删除</el-button>
           </template>
@@ -122,15 +106,22 @@
       >
       </el-pagination>
     </el-card>
+    <questionDialog ref="questionDialog"></questionDialog>
   </div>
 </template>
 
 <script>
-import { enterpriseList } from "@/api/enterprise.js";
-import { subList } from "@/api/subject.js";
+// import subjectDown from "./components/subjectDown.vue";
+// import enterpriseDown from "./components/enterpriseDown.vue";
 import { questionList } from "@/api/question.js";
+import questionDialog from "./components/questionDialog"
 export default {
   name: "question",
+  components: {
+    // subjectDown,
+    // enterpriseDown,
+    questionDialog
+  },
   data() {
     return {
       formInline: {
@@ -138,11 +129,9 @@ export default {
         region: "",
         value: "",
         status: "",
-        enterprise: "",
-        subject: ""
+        enterprise: 0,
+        subject: 0
       },
-      enterpriseList: [],
-      subjectList: [],
       tableData: [{}],
       page: 1,
       limit: 5,
@@ -150,12 +139,6 @@ export default {
     };
   },
   created() {
-    enterpriseList().then(res => {
-      this.enterpriseList = res.data.items;
-    });
-    subList().then(res => {
-      this.subjectList = res.data.items;
-    });
     this.getData();
   },
   methods: {
@@ -165,6 +148,9 @@ export default {
         this.page = res.data.pagination.page;
         this.total = res.data.pagination.total;
       });
+    },
+    addQusetion(){
+      this.$refs.questionDialog.dialogFormVisible = true
     },
     //页容量改变
     handleSizeChange(val) {

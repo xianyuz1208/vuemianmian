@@ -21,3 +21,12 @@ img{
   vertical-align: middle;
   border: none;
 }
+.el-dialog__header {
+  background: linear-gradient(to right, #02c6fc, #1394fb);
+}
+.el-dialog__title {
+  color: #ffffff;
+}
+.el-dialog__close {
+  color: white;
+}
