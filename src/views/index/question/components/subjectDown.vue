@@ -1,6 +1,6 @@
 <template>
   <el-select v-model="selfVaule" placeholder="请选择学科">
-    <el-option label="所有学科" :value="0"></el-option>
+    <el-option v-if="isQuery" label="所有学科" value=""></el-option>
     <el-option
       v-for="(item, index) in subjectList"
       :key="index"
@@ -16,8 +16,12 @@ export default {
   name: "subjectDown",
   props: {
     value: {
-      type: Number
-    }
+      type: [Number,String]
+    },
+    isQuery:{
+        type:Boolean,
+        default:true
+      }
   },
   data() {
     return {

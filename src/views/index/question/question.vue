@@ -129,8 +129,8 @@ export default {
         region: "",
         value: "",
         status: "",
-        enterprise: 0,
-        subject: 0
+        enterprise: "",
+        subject: ""
       },
       tableData: [{}],
       page: 1,

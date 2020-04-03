@@ -1,6 +1,6 @@
 <template>
   <el-select v-model="selfValue" placeholder="请选择企业">
-    <el-option label="所有企业" :value="0"></el-option>
+    <el-option v-if="isQuery" label="所有企业" value=""></el-option>
     <el-option
       v-for="(item, index) in enterpriseList"
       :key="index"
@@ -16,8 +16,12 @@ export default {
   name: "enterpriseDown",
   props: {
     value: {
-      type: Number
-    }
+      type: [Number,String]
+    },
+     isQuery:{
+       type:Boolean,
+       default:true
+     }
   },
   data() {
     return {
