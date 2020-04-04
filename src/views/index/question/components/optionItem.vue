@@ -1,6 +1,7 @@
 <template>
   <div class="option-container">
-    <el-radio :label="label"></el-radio>
+    <el-radio v-if="isRadio" :label="label"></el-radio>
+    <el-checkbox v-else :label="label"></el-checkbox>
     <el-input :value="text" @input="input"></el-input>
     <el-upload
       class="avatar-uploader"
@@ -18,22 +19,24 @@
 <script>
 export default {
   name: "optionItem",
-  props:{
-    label:{type:String},
-    text:{type:String},
-    image:{type:String}
+  props: {
+    label: { type: String },
+    text: { type: String },
+    image: { type: String },
+    isRadio: { type: Boolean, default: true },
   },
   data() {
     return {
-      uploadURL:process.env.VUE_APP_URL+ "/question/upload",
-      imageUrl:""
+      uploadURL: process.env.VUE_APP_URL + "/question/upload",
+      //当图片不是空的时候,如果有在线地址就用在线地址,否则用本地的地址
+      imageUrl:this.image != ""? process.env.VUE_APP_URL + "/" + this.image: this.image,
     };
   },
   methods:{
     input(val){
       this.$emit('update:text',val)
     },
-    handleAvatarSuccess(res, file) {
+      handleAvatarSuccess(res, file) {
         this.imageUrl = URL.createObjectURL(file.raw);
         this.$emit("update:image",res.data.url)
       },
@@ -58,9 +61,12 @@ export default {
   display: flex;
   align-items: center;
   margin-top: 20px;
-  .el-input{
+  .el-input {
     width: 450px;
     margin-right: 20px;
+  }
+  .el-checkbox:last-of-type {
+    margin-right: 30px;
   }
   .avatar-uploader .el-upload {
     border: 1px dashed #d9d9d9;

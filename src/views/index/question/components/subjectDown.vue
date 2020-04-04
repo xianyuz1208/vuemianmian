@@ -37,7 +37,7 @@ export default {
   },
   watch: {
     selfVaule() {
-      this.$emit("input", this.selfVaule);
+      this.$emit("uqdate:value", this.selfVaule);
     }
   }
 };

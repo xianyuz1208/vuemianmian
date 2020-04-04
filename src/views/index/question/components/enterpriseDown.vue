@@ -37,7 +37,7 @@ export default {
   },
   watch: {
     selfValue() {
-      this.$emit("input", this.selfValue);
+      this.$emit("update:value", this.selfValue);
     }
   }
 };
