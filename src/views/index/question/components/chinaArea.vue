@@ -24,6 +24,11 @@ export default {
       options: regionData
     }
   },
+  watch:{
+    value(){
+      this.selfValue = this.value
+    }
+  },
   methods:{
     handleChange(val){
       this.$emit('input',val)

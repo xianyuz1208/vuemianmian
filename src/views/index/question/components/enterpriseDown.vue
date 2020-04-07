@@ -36,8 +36,11 @@ export default {
     });
   },
   watch: {
+    value(){
+      this.selfValue = this.value
+    },
     selfValue() {
-      this.$emit("update:value", this.selfValue);
+      this.$emit("input", this.selfValue);
     }
   }
 };

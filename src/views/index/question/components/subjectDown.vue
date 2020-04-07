@@ -1,5 +1,5 @@
 <template>
-  <el-select v-model="selfVaule" placeholder="请选择学科">
+  <el-select v-model="selfValue" placeholder="请选择学科">
     <el-option v-if="isQuery" label="所有学科" value=""></el-option>
     <el-option
       v-for="(item, index) in subjectList"
@@ -16,30 +16,33 @@ export default {
   name: "subjectDown",
   props: {
     value: {
-      type: [Number,String]
+      type: [Number, String],
     },
-    isQuery:{
-        type:Boolean,
-        default:true
-      }
+    isQuery: {
+      type: Boolean,
+      default: true,
+    },
   },
   data() {
     return {
       subjectList: [],
-      selfVaule: this.value
+      selfValue: this.value,
     };
   },
   created() {
     //学科下拉框的获取
-    subList().then(res => {
+    subList().then((res) => {
       this.subjectList = res.data.items;
     });
   },
   watch: {
-    selfVaule() {
-      this.$emit("uqdate:value", this.selfVaule);
+    value(){
+      this.selfValue = this.value
+    },
+    selfValue() {
+      this.$emit("input", this.selfValue);
     }
-  }
+  },
 };
 </script>
 

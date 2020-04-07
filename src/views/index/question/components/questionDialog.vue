@@ -8,8 +8,7 @@
     >
       <el-form :rules="rules" ref="questionForm" :model="form">
         <el-form-item prop="subject" label="学科" :label-width="formLabelWidth">
-          <subjectDown :isQuery="false" 
-          :value.sync="form.subject" />
+          <subjectDown :isQuery="false" v-model="form.subject" />
         </el-form-item>
         <el-form-item label="阶段" prop="step" :label-width="formLabelWidth">
           <el-select v-model="form.step" placeholder="请选择阶段">
@@ -23,7 +22,7 @@
           prop="enterprise"
           :label-width="formLabelWidth"
         >
-          <enterpriseDown :isQuery="false" :value.sync="form.enterprise" />
+          <enterpriseDown :isQuery="false" v-model="form.enterprise" />
         </el-form-item>
         <el-form-item label="城市" prop="city" :label-width="formLabelWidth">
           <chinaArea v-model="form.city" />
@@ -52,7 +51,14 @@
           prop="title"
           :label-width="formLabelWidth"
         >
-          <myEditor v-model="form.title" />
+          <!-- <myEditor v-model="form.title" /> -->
+          <quill-editor
+            v-model="form.title"
+            ref="myQuillEditor"
+            :options="editorOption"
+            @change="onEditorChange($event)"
+          >
+          </quill-editor>
         </el-form-item>
         <el-form-item
           v-if="form.type == 1"
@@ -62,11 +68,11 @@
         >
           <el-radio-group v-model="form.single_select_answer">
             <optionItem
-            v-for="(item,index) in form.select_options"
-            :key="index"
-            :label="item.label"
-            :text.sync="item.text"
-            :image.sync="item.image"
+              v-for="(item, index) in form.select_options"
+              :key="index"
+              :label="item.label"
+              :text.sync="item.text"
+              :image.sync="item.image"
             />
           </el-radio-group>
         </el-form-item>
@@ -110,7 +116,14 @@
           prop="answer_analyze"
           :label-width="formLabelWidth"
         >
-          <myEditor v-model="form.answer_analyze" />
+          <!-- <myEditor v-model="form.answer_analyze" /> -->
+          <quill-editor
+            v-model="form.answer_analyze"
+            ref="myQuillEditor"
+            :options="editorOption"
+            @focus="onEditorFocus($event)"
+          >
+          </quill-editor>
         </el-form-item>
         <el-divider></el-divider>
         <el-form-item
@@ -138,15 +151,19 @@
 
 <script>
 import chinaArea from "./chinaArea";
-import myEditor from "./myEditor";
+// import myEditor from "./myEditor";
 import optionItem from "./optionItem";
 import uploadVideo from "./uploadVideo";
-import { questionAdd, getQuestion } from "@/api/question.js";
+import { questionAdd, getQuestion, editQuestion } from "@/api/question.js";
+import { quillEditor } from "vue-quill-editor";
+import "quill/dist/quill.snow.css";
+import * as Quill from "quill";
 export default {
   name: "questionDialog",
   components: {
     chinaArea,
-    myEditor,
+    // myEditor,
+    quillEditor,
     optionItem,
     uploadVideo,
   },
@@ -192,6 +209,9 @@ export default {
       },
       //布尔值,false是新增,true是编辑
       isEdit: false,
+      editorOption: {
+        placeholder: "请输入正文",
+      },
       dialogFormVisible: false,
       formLabelWidth: "120px",
       isDdestroy: false,
@@ -225,8 +245,17 @@ export default {
       },
     };
   },
+  mounted() {
+    // this.$refs.myQuillEditor.quill.enable(false)
+  },
   methods: {
-      show(editData) {
+    onEditorChange($event) {
+      this.$nextTick(function () {
+        this.$refs.myQuillEditor.quill.blur();
+        this.$refs.myQuillEditor.quill.enable(true);
+      });
+    },
+    show(editData) {
       this.dialogFormVisible = true;
       if (editData == undefined) {
         this.$nextTick(() => {
@@ -238,24 +267,39 @@ export default {
         this.$nextTick(() => {
           this.isEdit = true;
           this.form = editData;
+          this.$refs.myQuillEditor.quill.enable(false);
         });
       }
     },
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          questionAdd(this.form).then((res) => {
-            // window.console.log(res)
-            if (res.code === 200) {
-              this.$message.success("新增成功");
-              this.dialogFormVisible = false;
-              this.isDdestroy = true;
-              this.$refs.questionForm.resetFields();
-              this.$parent.getData();
-            } else {
-              this.$message.error(res.code);
-            }
-          });
+          if (this.isEdit) {
+            editQuestion(this.form).then((res) => {
+              if (res.code === 200) {
+                this.$message.success("修改成功");
+                this.dialogFormVisible = false;
+                this.isDdestroy = true;
+                this.$refs.questionForm.resetFields();
+                this.$parent.getData();
+              } else {
+                this.$message.error(res.code);
+              }
+            });
+          } else {
+            questionAdd(this.form).then((res) => {
+              // window.console.log(res)
+              if (res.code === 200) {
+                this.$message.success("新增成功");
+                this.dialogFormVisible = false;
+                this.isDdestroy = true;
+                this.$refs.questionForm.resetFields();
+                this.$parent.getData();
+              } else {
+                this.$message.error(res.code);
+              }
+            });
+          }
         } else {
           this.$message.error("校验失败,请检查数据");
           return false;
